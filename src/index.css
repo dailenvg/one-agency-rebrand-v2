@@ -1,0 +1,239 @@
+@import "tailwindcss";
+
+/* Runtime tokens. ThemeProvider rewrites the --c-* and --f-* values for the selected concept and mode; these are the
+   default concept's (nova, light) so the first paint already matches. */
+:root {
+  --c-bg: #ffffff;
+  --c-surface: #f5f5f7;
+  --c-surface2: #ebebed;
+  --c-ink: #0f1417;
+  --c-muted: #575c66;
+  --c-line: rgba(15, 20, 23, 0.12);
+  --c-accent: #6203d0;
+  --c-accent-ink: #ffffff;
+  --c-accent-text: #6203d0;
+  --c-accent2: #00fab3;
+  --c-hero: #400257;
+  --c-hero-ink: #f5f5f7;
+  --c-glow: #00fab3;
+  --g-brand: linear-gradient(120deg, #00fdba 0%, #6203d0 90%);
+  --f-display: "Unbounded", system-ui, sans-serif;
+  --f-display-weight: 600;
+  --f-display-stretch: 100%;
+  --f-display-tracking: -0.02em;
+  --f-display-scale: 0.8;
+  --r-sm: 999px;
+  --r-md: 24px;
+  --r-lg: 40px;
+  color-scheme: light;
+}
+
+:root[data-mode="dark"] {
+  color-scheme: dark;
+}
+
+/* Static scale tokens: one section rhythm, one heading scale, two elevations. */
+@theme {
+  --spacing-section: clamp(88px, 11vw, 168px);
+  --spacing-module: clamp(56px, 7vw, 112px);
+  --spacing-stack: clamp(36px, 4.5vw, 64px);
+  --text-h2: clamp(2.6rem, 6vw, 5.25rem);
+  --text-h2--line-height: 0.94;
+  --text-h2--letter-spacing: -0.045em;
+  --text-h3: clamp(2rem, 3.2vw, 3rem);
+  --text-h3--line-height: 0.98;
+  --text-h3--letter-spacing: -0.04em;
+  --text-lead: clamp(1.0625rem, 1.25vw, 1.25rem);
+  --text-lead--line-height: 1.55;
+  /* Editorial lead: the large paragraph set beside a section headline. */
+  --text-lead-xl: clamp(1.3rem, 2.2vw, 2rem);
+  --text-lead-xl--line-height: 1.24;
+  --text-lead-xl--letter-spacing: -0.02em;
+  /* Oversized index numbers ghosted behind card content. */
+  --text-ghost: clamp(5.5rem, 9vw, 8.5rem);
+  --text-ghost--line-height: 0.8;
+  --text-ghost--letter-spacing: -0.06em;
+  --shadow-soft: 0 0 0 1px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04), 0 24px 48px -32px rgb(0 0 0 / 0.3);
+  --shadow-lift: 0 0 0 1px rgb(0 0 0 / 0.05), 0 2px 6px rgb(0 0 0 / 0.06), 0 44px 72px -36px rgb(0 0 0 / 0.45);
+}
+
+@theme inline {
+  --text-display: calc(clamp(2.7rem, 8.2vw, 7.4rem) * var(--f-display-scale));
+  --text-display--line-height: 0.98;
+  /*
+   * The hero headline over the photo: a step above display, scaled per concept like it. Capped by the screen's height
+   * too, so three lines of a tall face still leave room for the nav and the copy on short, wide screens.
+   */
+  --text-billboard: calc(clamp(2.75rem, min(8.6vw, 13svh), 8.5rem) * var(--f-display-scale));
+  --text-billboard--line-height: 0.94;
+  --text-kit: calc(clamp(3.6rem, 13vw, 11rem) * var(--f-display-scale));
+  --text-kit--line-height: 1.06;
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-surface2: var(--c-surface2);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-line: var(--c-line);
+  --color-accent: var(--c-accent);
+  --color-accent-ink: var(--c-accent-ink);
+  --color-accent-text: var(--c-accent-text);
+  --color-accent2: var(--c-accent2);
+  --color-hero: var(--c-hero);
+  --color-hero-ink: var(--c-hero-ink);
+  /* A surface raised off the hero colour: in dark mode surface2 sits too close to the hero to hold its edge. */
+  --color-hero-raised: color-mix(in srgb, var(--c-hero-ink) 14%, var(--c-hero));
+  --color-glow: var(--c-glow);
+  --font-display: var(--f-display);
+  --font-sans: "Funnel Sans", Inter, system-ui, -apple-system, sans-serif;
+  --font-mono: "Sora", system-ui, sans-serif;
+  --font-shell: "Funnel Display", Inter, system-ui, sans-serif;
+  --radius-brand-sm: var(--r-sm);
+  --radius-brand-md: var(--r-md);
+  --radius-brand-lg: var(--r-lg);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /*
+     * The scrolled nav bar's exact height, so an anchor jump lands flush under it with no sliver of the section above.
+     * Every screen: a 64px main row (8 + 48 for the concept switch + 8) plus the 44px page menu row. Sections bring their own
+     * top padding for breathing room. Keep in sync with Nav.tsx.
+     */
+    --nav-h: 108px;
+    scroll-padding-top: var(--nav-h);
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    background: var(--c-bg);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+  /* Light/dark switch: one whole-page crossfade (View Transitions), timed like a component transition with the shared ease.out. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.4s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Chrome on Android widens the layout viewport to fit overflow even when body hides it, so clip at the app root. */
+  #root {
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--c-accent);
+    color: var(--c-accent-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus-ring, var(--c-accent-text));
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  /*
+   * On the hero colour the light-mode accent text (navy, cobalt, violet) all but vanishes, so focus rings there take
+   * the glow colour, which clears 3:1 on every concept's hero in both modes.
+   */
+  #top,
+  .on-hero,
+  .guides-hero {
+    --focus-ring: var(--c-glow);
+  }
+  img {
+    max-width: 100%;
+  }
+}
+
+@layer components {
+  .display {
+    font-family: var(--f-display);
+    font-weight: var(--f-display-weight);
+    font-stretch: var(--f-display-stretch);
+    letter-spacing: var(--f-display-tracking);
+    line-height: 0.98;
+  }
+  /*
+   * A single line of display type inside a tight or clipped slot. Tall faces and wide ones (one-dvg,
+   * Unbounded) carry ink outside a 1em box, so give the line room above and below.
+   */
+  .display-slot {
+    line-height: 1.1;
+    padding-block: 0.08em;
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .dot-grid {
+    background-image: radial-gradient(color-mix(in srgb, var(--c-ink) 14%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .container-x {
+    width: 100%;
+    max-width: 1360px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 4vw, 48px);
+  }
+  /*
+   * Column guides: faint vertical rules behind a section, on the same edges as .container-x. Edges only on phones,
+   * where everything stacks and a centre rule would only cut through running text; two columns from 640px (where
+   * card grids go two-up), four from desktop. Sections on the hero colour add .guides-hero for a rule that reads on it.
+   */
+  .guides {
+    --guide: color-mix(in srgb, var(--c-line) 70%, transparent);
+    position: relative;
+    isolation: isolate;
+  }
+  .guides::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    max-width: 1360px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 4vw, 48px);
+    background-image: linear-gradient(90deg, var(--guide) 1px, transparent 1px);
+    background-size: calc(100% - 1px) 100%;
+    background-origin: content-box;
+    background-clip: content-box;
+    background-repeat: repeat-x;
+  }
+  @media (min-width: 640px) {
+    .guides::before {
+      background-size: calc((100% - 1px) / 2) 100%;
+    }
+  }
+  @media (min-width: 1024px) {
+    .guides::before {
+      background-size: calc((100% - 1px) / 4) 100%;
+    }
+  }
+  .guides-hero {
+    --guide: color-mix(in srgb, var(--c-hero-ink) 9%, transparent);
+  }
+  /* Brand kit modules number themselves in page order, so adding or reordering a module needs no edits. */
+  .kit-modules {
+    counter-reset: kit-module;
+  }
+  .kit-module {
+    counter-increment: kit-module;
+  }
+  .kit-index::before {
+    content: counter(kit-module, decimal-leading-zero);
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
