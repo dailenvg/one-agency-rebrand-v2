@@ -1,0 +1,10 @@
+/* one-dvg: ONE Agency's original display face. Built by scripts/build-font.py. */
+@font-face {
+  font-family: "one-dvg";
+  src:
+    url("../assets/fonts/one-dvg.woff2") format("woff2"),
+    url("../assets/fonts/one-dvg.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
